@@ -22,7 +22,7 @@ class Cell(nn.Module):
 
     def __init__(self, steps, block_multiplier, prev_prev_fmultiplier,
                  prev_fmultiplier_down, prev_fmultiplier_same, prev_fmultiplier_up,
-                 filter_multiplier):
+                 filter_multiplier, prev_fmultiplier_down_down):  #prev_fmultiplier_down_down added
 
         super(Cell, self).__init__()
 
@@ -44,6 +44,11 @@ class Cell(nn.Module):
             self.C_prev_up = int(prev_fmultiplier_up * block_multiplier)
             self.preprocess_up = ReLUConvBN(
                 self.C_prev_up, self.C_out, 1, 1, 0, affine=False)
+##            
+        if prev_fmultiplier_down_down is not None:
+            self.C_prev_down = int(prev_fmultiplier_down_down * block_multiplier)
+            self.preprocess_down = ReLUConvBN(
+                self.C_prev_down, self.C_out, 1, 1, 0, affine=False)
 
         if prev_prev_fmultiplier != -1:
             self.pre_preprocess = ReLUConvBN(
@@ -80,14 +85,17 @@ class Cell(nn.Module):
 
         return F.interpolate(prev_feature, (feature_size_h, feature_size_w), mode='bilinear', align_corners=True)
 
-    def forward(self, s0, s1_down, s1_same, s1_up, n_alphas):
+##
+    def forward(self, s0, s1_down, s1_same, s1_up, n_alphas, s2_down):  #s2_down added
 
         if s1_down is not None:
             s1_down = self.prev_feature_resize(s1_down, 'down')
             s1_down = self.preprocess_down(s1_down)
+            print("s1_down", s1_down.shape)
             size_h, size_w = s1_down.shape[2], s1_down.shape[3]
         if s1_same is not None:
             s1_same = self.preprocess_same(s1_same)
+            print("s1_same", s1_same.shape)
             size_h, size_w = s1_same.shape[2], s1_same.shape[3]
         if s1_up is not None:
             s1_up = self.prev_feature_resize(s1_up, 'up')
