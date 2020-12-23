@@ -181,11 +181,6 @@ class AutoDeeplab(nn.Module):
                     normalized_betas[layer][1] = F.softmax(self.betas[layer][1].to(device=img_device), dim=-1)
                     normalized_betas[layer][2] = F.softmax(self.betas[layer][2].to(device=img_device), dim=-1)
                     
-##
-                elif layer == 1 and layer == 3:
-                    normalized_betas[layer][1] = F.softmax(self.betas[layer][1].to(device=img_device), dim=-1)
-                    normalized_betas[layer][3] = F.softmax(self.betas[layer][3].to(device=img_device), dim=-1)
-                    
                     
                 else:
                     normalized_betas[layer][0][1:] = F.softmax(self.betas[layer][0][1:].to(device=img_device), dim=-1) * (2/3)
@@ -209,10 +204,6 @@ class AutoDeeplab(nn.Module):
                     normalized_betas[layer][1] = F.softmax(self.betas[layer][1], dim=-1)
                     normalized_betas[layer][2] = F.softmax(self.betas[layer][2], dim=-1)
                     
-##
-                elif layer == 1 and layer == 3:
-                    normalized_betas[layer][1] = F.softmax(self.betas[layer][1].to(device=img_device), dim=-1)
-                    normalized_betas[layer][3] = F.softmax(self.betas[layer][3].to(device=img_device), dim=-1)
                     
                 else:
                     normalized_betas[layer][0][1:] = F.softmax(self.betas[layer][0][1:], dim=-1) * (2/3)
@@ -346,7 +337,7 @@ class AutoDeeplab(nn.Module):
 ##                
                 
                 count += 1
-                level_8_32_N = normalized_betas[layer][0][2] * level32_new_1 #+ normalized_betas[layer][3][1]
+                level_8_32_N = normalized_betas[layer][0][2] * level32_new_1 
                 print("level_8_32_N", level_8_32_N.shape)
                 
 
@@ -467,10 +458,10 @@ class AutoDeeplab(nn.Module):
         logits = self(input)
         return self._criterion(logits, target)
 
-#
+
 #def main():
-#    model = AutoDeeplab(7, 12, None)
-#    x = torch.tensor(torch.ones(4, 3, 224, 224))
+#    model = AutoDeeplab(2, 12, None)
+#    x = torch.tensor(torch.ones(2, 1, 256, 256))
 ##    resultdfs = model.decode_dfs()
 ##    resultviterbi = model.decode_viterbi()[0]
 ##
